@@ -1,0 +1,410 @@
+html {
+    min-height: 100%
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: white;
+
+}
+
+h1{
+  text-align: center;
+
+}
+
+#map { 
+  position: absolute; 
+  top:0;
+  bottom:0; 
+  width:100%; 
+}
+
+.mapboxgl-ctrl-top-right {
+    top: 4%;
+    right: 1%;
+    z-index: 0;
+}
+
+
+/*#topbar {
+  font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+  position: absolute;
+  bottom: 10px;
+  left:10px;
+}*/
+#desc {
+  position: absolute;
+  top:100px;
+  color:#d2d2d2;
+  font: 14px/20px 'Roboto', sans-serif;
+}
+#factor {
+  position: absolute;
+  top:270px;
+  color:#d2d2d2;
+  font: 14px/20px 'Roboto', sans-serif;
+}
+#bg_solar{
+  position: absolute;
+  top:800px;
+}
+/* Add a black background color to the top navigation */
+/*.topnav {
+    background-color: #333;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    width:100%;
+    height:40px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+/* Style the links inside the navigation bar */
+/*.topnav ul {
+    list-style-type: none;
+    padding: 0;
+    overflow:hidden;
+}
+.topnav li {
+    display:inline-block;
+}*/
+/* Change the color of links on hover */
+/*.topnav a:hover {
+    background-color: #9ebcda;
+    color: black;
+    display:inline-block;
+}
+
+.topnav a:link, a:visited {
+    margin:0 auto;
+    display:block;
+    width: 120px;
+    font-weight:bold;
+    color:#efedf5;
+    text-align:center;
+    padding:10px;
+    text-decoration:none;
+    text-transform:uppercase;
+    }*/
+
+/* Add a color to the active/current link */
+/*.topnav a:active {
+    background-color: #9ebcda;
+    color: white;
+}*/
+.opacity{
+    padding-left: 10px;
+    font: 12px/20px 'Roboto', sans-serif;
+    top:2%;
+}
+
+
+#dropdown{
+  position: absolute;
+/*  top: 10px;
+  left:90%;*/
+  width: 120px;
+  top:0.5%;
+  right: 20px;
+  z-index: 1;
+}
+
+
+.map-overlay {
+  font: 12px/20px 'Open Sans', sans-serif;
+/*  position: absolute;*/
+  top:2%;
+  left:10px;
+  width: 100%;
+  background: transparent;
+  color:#f0f0f0;;
+}
+
+.map-overlay .map-overlay-inner {
+    background-color: #fff;
+    box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+    border-radius: 3px;
+    padding: 5px;
+    margin-bottom: 5px;
+    background: transparent;
+}
+
+.map-overlay label {
+    display: block;
+    margin: 0 0 0px;
+    background: transparent;
+}
+
+.map-overlay input {
+/*    background-color: transparent;*/
+    display: inline-block;
+    width: 100%;
+    position: relative;
+    margin: 0;
+    cursor: ew-resize;
+    background: transparent;
+}
+
+.slider_ratio{
+  /*position: absolute;*/
+  left:10px;
+  top:20px;
+   width:200px; 
+  height:10px;
+/*  overflow:auto;*/
+}
+
+
+
+.legend {
+    background-color: #fff;
+    border-radius: 3px;
+    top: 350px;
+/*    left:0px;*/
+/*    right:30px;*/
+/*    height:60%;*/
+    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    font: 14px/20px 'Roboto', sans-serif;;
+    color: #f0f0f0;
+    padding: 10px;
+    position: absolute;
+    background: transparent;
+}
+
+.legend h4 {
+    font:bold 18px/20px 'Open Sans', sans-serif;
+    margin: 0 0 8px;
+}
+
+.legend h3 {
+    font: 14px/20px 'Open Sans', sans-serif;
+}
+
+.legend #solar {
+  left:6%;
+}
+.title {
+  position: absolute;
+  top: 20px;
+  font-family: 'Open Sans', sans-serif;
+  color: #c4d4d3;
+/*  width: 100%;
+  height:200px;*/
+}
+
+.subtitle {
+  position: absolute;
+  top: 55px;
+  font-family: 'Open Sans', sans-serif;
+  font-size:x-small;
+}
+
+.subtitle a{
+  color: #c4d4d3;
+  text-decoration: none
+}
+
+.subtitle a:hover {
+    color: #337ab7;
+    text-decoration: none
+}
+
+.subtitle a:focus {
+    color: #337ab7;
+    text-decoration: none
+}
+
+
+.layer {
+  position: absolute;
+  top: 70px;
+  width: 100%;
+  height:200px;
+}
+
+#layerControl {
+  position: absolute;
+/*  top:15px;*/
+  left: 10px;
+  color:#ccc49f;
+  font:bold 18px/20px 'Open Sans', sans-serif;
+  height:20px;
+
+}
+
+#legendtitle {
+  position: absolute;
+/*  top:0px;*/
+  left: 10px;
+  color:#ccc49f;
+  font::bold 18px/20px 'Open Sans', sans-serif;
+}
+
+.legend div span {
+    border-radius: 50%;
+    display: inline-block;
+    height: 8px;
+    margin-right: 5px;
+    width: 10px;
+}
+
+#body4{
+  overflow: hidden;
+}
+
+/*side navigation*/
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: absolute; /* Stay in place */
+    z-index: 1; /* Stay on top */
+/*    top: 0;*/
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow: auto;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 40px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+#tooltip {
+  position: absolute;
+  left:20px;
+/*  background-color: ccc49f;*/
+  top: 220px;
+  font:bold 12px/20px 'Open Sans', sans-serif;
+}
+
+#openbtn {
+    position: absolute;
+    top:0px;
+    color:#f0f0f0;
+}
+
+
+/*HR {
+  position: absolute;
+  width: 100%;
+  top:270px;
+}*/
+/*layer control*/
+#menu {
+    position: absolute;
+    z-index: 1;
+    top: 20%;
+    left: 6%;
+    width: 95%;
+    font-family: 'Roboto', sans-serif;
+    font: bold 12px/20px;
+    color: #f0f0f0;
+}
+
+#menu input {
+  margin-left:0.5%;
+}
+
+/*#menu a {
+    font-size: 13px;
+    color: #404040;
+    display: block;
+    margin: 0;
+    padding: 0;
+    padding: 10px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    text-align: center;
+}
+
+#menu a:last-child {
+    border: none;
+}
+
+#menu a:hover {
+    background-color: #f8f8f8;
+    color: #404040;
+}
+
+#menu a.active {
+    background-color: #3887be;
+    color: #ffffff;
+}
+
+#menu a.active:hover {
+    background: #3074a4;
+}*/
+
+#basemapselections a:hover {
+    background-color: #ccc;
+    color: #404040;
+}
+
+/*popup box*/
+#container {
+  min-width: 310px; 
+  height: 400px; 
+  max-width: 600px; 
+  margin: 0 auto;
+}
+
+/*tab in the side bar*/
+
+div.tab {
+    position: absolute;
+    top:100px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    width:100%;
+}
+
+/* Style the buttons inside the tab */
+div.tab button {
+    background-color: inherit;
+    font: 16px/20px 'Roboto', sans-serif;
+    width: 50%;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+div.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+div.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    position: absolute;
+    width: 100%;
+    top: 80px;
+    display: none;
+    padding: 6px 12px;
+/*    border: 1px solid #ccc;*/
+    border-top: none;
+}
+/*make side bar wider when screen shrinks
+*/
+
+/*@media screen and (max-width: 1380px)  {
+  .sidenav { display: none; }
+/*  article { width: 100%; }*/
+/*} */

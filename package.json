@@ -1,0 +1,39 @@
+{
+  "name": "solar_prioritization_tool2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "public/script/app.js",
+  "scripts": {
+    "start": "nodemon ./public/script/app.js localhost 3000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanCheng0104/solar_prioritization_tool2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DanCheng0104/solar_prioritization_tool2/issues"
+  },
+  "homepage": "https://github.com/DanCheng0104/solar_prioritization_tool2#readme",
+  "dependencies": {
+    "@mapbox/mapbox-gl-sync-move": "^0.2.0",
+    "body-parser": "^1.18.2",
+    "browserify": "^14.4.0",
+    "chart.js": "^2.5.0",
+    "express": "^4.16.1",
+    "jquery": "^3.2.1",
+    "mapbox": "^1.0.0-beta5",
+    "mapbox-gl": "^0.36.0",
+    "mapbox-gl-supported": "^1.2.0",
+    "mapbox-gl-sync-move": "^0.1.0",
+    "mime": "~1.2.7",
+    "nouislider": "^10.1.0",
+    "requirejs": "^2.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  }
+}

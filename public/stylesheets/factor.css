@@ -1,0 +1,227 @@
+#container {
+  position: absolute; 
+/*  left:0;
+*/  height:100%;
+  width: 100%;
+
+}
+
+#return{
+	position: absolute;
+	z-index: 1;
+}
+
+#map1 { 
+  position: absolute; 
+  top:0;
+  bottom:50%;
+  width:50%;
+  height:50%;
+  border: 1px solid black;
+}
+
+#map2 { 
+  position: absolute; 
+  top:0;
+  bottom:50%; 
+  width:50%;
+  height:50%;
+  left:50%;
+  border: 1px solid black;
+}
+
+#map3 { 
+  position: absolute; 
+  top:50%;
+  bottom:0; 
+  width:50%;
+  height:50%;
+  border: 1px solid black;
+}
+
+#map4 { 
+  position: absolute; 
+  top:50%; 
+  bottom:0; 
+  width:50%;
+  height:50%;
+  left:50%;
+  border: 1px solid black;
+}
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    width: 50%; /* Full width */
+    height: 50%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+#modal1{
+/*	top:25%;*/
+	bottom:50%;
+}
+
+#modal2{
+	left:50%;
+/*	top:25%;*/
+	bottom:50%;
+}
+
+#modal3{
+	bottom:25%;
+	top:50%;
+}
+
+#modal4{
+	bottom:25%;
+	top:50%;
+	left:50%;
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.legend{
+	  background-color: #fff;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    font: 12px/20px 'Open Sans', sans-serif;    
+    position: absolute;
+    padding: 3px;
+    z-index: 1;
+    height: 200px;
+    width: 310px;
+    opacity: 0.75;    
+}
+#map1_legend {
+    bottom: 50%; 
+}
+#map2_legend {
+    bottom: 50%; 
+    left:50%;
+}
+#map3_legend {
+    bottom: 0px;
+}
+#map4_legend {
+    bottom: 0px;
+    left:50%;
+}
+.mapTitle{
+	margin-top: 0;
+  margin-bottom: 0;
+	font:16px/20px 'Roboto', sans-serif,bold;
+	background-color: #a4b8ca;
+	color: #000;
+}
+.legendTitle{
+	font:16px/20px 'Roboto', sans-serif;
+}
+
+#body4 {
+  margin-top: 10px
+}
+
+.legend div span {
+    border-radius: 50%;
+    display: inline-block;
+    height: 8px;
+    margin-right: 5px;
+    width: 10px;
+}
+
+.mapboxgl-ctrl-compass {
+display: none !important;
+}
+
+#map3 .mapboxgl-popup-content {
+    overflow-y:scroll;
+    height:200px;
+    font:13px/20px 'Roboto', sans-serif;
+}
+
+#map1 .mapboxgl-popup-content {
+/*    overflow-y: scroll;*/
+    height: 100px;
+    font: 13px/20px 'Roboto', sans-serif;
+}
+
+#map2 .mapboxgl-popup-content {
+    overflow-y: scroll;
+    height: 300px;
+    font: 13px/20px 'Roboto', sans-serif;
+}
+
+#pie {
+/*  min-width: 310px; */
+  height: 250px; 
+/*  max-width: 600px; */
+  margin: 0 auto;
+  z-index: 1;
+  overflow-y: auto;
+}
+
+#bar {
+  min-width: 310px; 
+  height: 300px; 
+  max-width: 600px; 
+  margin: 0 auto;
+}
+
+.info a {
+  position: absolute;
+  bottom: 10px;
+  right:15px;
+  font-size: 1.6em;
+}
+
+.arrow {
+  position: absolute;
+  top: 0px;
+  right:10px;
+  font-size: 1.5em;
+}
+.info a:hover {
+  position: absolute;
+  bottom: 10px;
+  right:10px;
+  font-size: 2.0em;
+}
+
+.info a:visit {
+  position: absolute;
+  bottom: 10px;
+  right:10px;
+  font-size: 2.0em;
+}
+
+#label2{
+	margin-left: 20px;
+
+}
+
+

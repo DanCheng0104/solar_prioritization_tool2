@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Prototype</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <link rel="stylesheet" href="stylesheets/nouislider.min.css">
+  <link rel="stylesheet" href="stylesheets/nouislider.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:800" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+</head>
+<body>
+  <div id='canvas'>
+      
+      <div id='map'></div>
+      <div id = 'dropdown' class="container">
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" id="menu1" type="button" data-toggle="dropdown">Basemaps
+          <span class="caret"></span></button>
+          <ul id = 'basemapselections' class="dropdown-menu" role="menu" aria-labelledby="menu1">
+            <li id = 'dark' class="active" role="presentation"><a role="menuitem" tabindex="-1" href="#">dark</a></li>
+            <li id = 'satellite' role="presentation"><a role="menuitem" tabindex="-1" href="#">satellite</a></li>
+          </ul>
+        </div>
+      </div>   
+      <span style="font-size:30px;cursor:pointer" id = 'openbtn' onclick="openNav()">&#9776;</span>
+
+      <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <h4 class='title' >Solar Prioritization Tool</h4>
+        <p class ='subtitle'><a href="https://www.ioes.ucla.edu/ccsc/" target="_blank">California Center for Sustainable Communities at UCLA</a></p>
+        <div id = 'desc'>This is an interactive tool for prioritizing the location of Advanced Energy Communities in Los Angeles (LA) County. The tool has a particular focus on Disadvantaged Communities, which often have fewer resources installing energy efficiency or renewable energy, along with less robust grid infrastructure. The tool will be a resource for LA County communities as they look to expand innovative designs for future communities. It will also serve as a methodological roadmap for such analyses across the state.<div>
+        <div></div>
+        <div id = 'factor'>This tool comes from serveral key sources, and view maps each of the individual source and their data descriptions <a class="tablinks" href='factor.html'>here</a>.</div>
+        <div id='state-legend' class='legend'>
+          <div id = 'bg_ratio'>
+            <h3>Prioritization Ratio</h3>
+            <div><span style='background-color: #edf8fb'></span><= 0.2</div>
+            <div><span style='background-color: #b2e2e2'></span><= 0.4</div>
+            <div><span style='background-color: #66c2a4'></span><= 0.6</div>
+            <div><span style='background-color: #2ca25f'></span><= 0.8</div>
+            <div><span style='background-color: #006d2c'></span><= 1</div>
+            <div><span style='border: solid 1px #e07a7a'></span>Disadvantaged Communities</div>
+       
+            <div class='map-overlay top'>
+            <div class='map-overlay-inner'>
+            <label class = 'opacity'>Layer Transparency: <span id='slider_ratio_value'>100%</span></label>
+            <input id='slider_ratio' type='range' min='0' max='100' step='0' value='100' />
+            </div>
+          </div>
+        </div>
+        <div class = 'opacity'>Ratio Filter</div>  
+        <div id='filter_ratio' class = 'slider_ratio'></div>  
+        </div>
+
+    </div>      
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>   
+<script type="text/javascript" src = 'script/bundle1.js'></script>
+
+</body>
+</html>
