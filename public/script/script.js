@@ -12,10 +12,10 @@ var map = new mapboxgl.Map({
 
 map.addControl(new mapboxgl.NavigationControl());
 // const toggleableLayerIds = ['circuits','solar','SCE_Service','bg_avg_cir'];
-let layerList = document.getElementById('basemapselections');
-let inputs = layerList.getElementsByTagName('li');
-let ratioSlider = document.getElementById('slider_ratio');
-let ratioSliderValue = document.getElementById('slider_ratio_value');
+const layerList = document.getElementById('basemapselections');
+const inputs = layerList.getElementsByTagName('li');
+const ratioSlider = document.getElementById('slider_ratio');
+const ratioSliderValue = document.getElementById('slider_ratio_value');
 
 const ratioUISlider = document.getElementById('filter_ratio');
 noUiSlider.create(ratioUISlider, {
