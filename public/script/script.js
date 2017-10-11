@@ -1,9 +1,10 @@
 const mapboxgl = require('mapbox-gl'),
-      $ = require('jquery'),
-      noUiSlider = require('nouislider');
+      $ = require('jquery');
+
+const noUiSlider = require('nouislider');
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGNoZW5nMDEwNCIsImEiOiJjaXE0MDh2MHQwMG9xZnhtNGg0azVybGxtIn0.7jdNnbpd8kQI3qO1HfSnUg';
-var map = new mapboxgl.Map({
+const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/dark-v9',
     zoom: 9,

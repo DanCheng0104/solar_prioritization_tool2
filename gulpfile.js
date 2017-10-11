@@ -1,22 +1,27 @@
 "use strict";
 
-const   gulp  = require('gulp'),
-		del = require('del'), 
-	    source   = require('vinyl-source-stream'),
-	    imagemin = require('gulp-imagemin'),
-	    uglify = require('gulp-uglify-es').default,
-	    buffer = require('vinyl-buffer'),
-	    sourcemaps = require('gulp-sourcemaps'), 
-	    rename     = require('gulp-rename'),
-	    browserify = require('browserify'),
-	    es         = require('event-stream'),
-	    cleanCSS = require('gulp-clean-css'),
-		gutil= require('gulp-util');
+const gulp  = require('gulp'),
+	  del = require('del'), 
+	  source   = require('vinyl-source-stream'),
+	  imagemin = require('gulp-imagemin'),
+	  uglify = require('gulp-uglify-es').default,
+	  buffer = require('vinyl-buffer'),
+	  sourcemaps = require('gulp-sourcemaps'), 
+	  rename = require('gulp-rename'),
+	  browserify = require('browserify'),
+	  es  = require('event-stream'),
+	  cleanCSS = require('gulp-clean-css'),
+	  gutil= require('gulp-util');
+
+
+const options = {
+    jsFiles : 'public/script/*.js'
+}
 gulp.task('clean', ()=>{
   return del(['dist/**/*'])
 });
 
-gulp.task('default', function() {
+gulp.task('javascript', function() {
     // we define our input files, which we want to have
     // bundled:
     var files = [
@@ -54,5 +59,9 @@ gulp.task('minify-css',() => {
     .pipe(sourcemaps.init())
     .pipe(cleanCSS())
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist/stylesheets'));
+    .pipe(gulp.dest('./dist/public/stylesheets'));
+});
+
+gulp.task('watch',()=> {
+    gulp.watch(options.jsFiles,['javascript']);
 });
