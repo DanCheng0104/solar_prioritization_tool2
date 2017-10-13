@@ -98,22 +98,22 @@ map2.on('load', function () {
           "type": "fill",
           "source": {
               type: 'vector',
-              url: 'mapbox://dcheng0104.bfbcjann'
+              url: 'mapbox://dcheng0104.72rdrfrm'
           },
           'layout': {
               'visibility': 'visible'
           },
-          "source-layer":"bg_solar_update-6x2l7n",
+          "source-layer":"bg_solar_update1-4gt26j",
           
           "paint": {
                   "fill-color": {
                       property: 'netsolar',
                       stops: [
-                        [6291660.000000,'#edf8fb'],
-                        [19164000.000000,'#b3cde3'],
-                        [52151800.000000,'#8c96c6'],
-                        [109041000.000000,'#8856a7'],
-                        [375473984.000000,'#810f7c']
+                        [6291.66,'#edf8fb'],
+                        [19164,'#b3cde3'],
+                        [52151.8,'#8c96c6'],
+                        [109041,'#8856a7'],
+                        [375473.984,'#810f7c']
                       ]
                   },
             "fill-outline-color": "#e1cdb5",

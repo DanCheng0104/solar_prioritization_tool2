@@ -5,7 +5,7 @@ const express = require('express'),
 	  router = require("./routes");
 
 const app = express();
-app.use(express.static('public'))
+app.use(express.static('dist/public'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const port = process.env.PORT || 3000;

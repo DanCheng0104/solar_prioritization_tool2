@@ -1,10 +1,11 @@
+
+
 const mapboxgl = require('mapbox-gl'),
-      $ = require('jquery');
-
-const noUiSlider = require('nouislider');
-
+      $ = require('jquery'), 
+      noUiSlider = require('nouislider');
+      
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGNoZW5nMDEwNCIsImEiOiJjaXE0MDh2MHQwMG9xZnhtNGg0azVybGxtIn0.7jdNnbpd8kQI3qO1HfSnUg';
-const map = new mapboxgl.Map({
+var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/dark-v9',
     zoom: 9,
@@ -13,24 +14,24 @@ const map = new mapboxgl.Map({
 
 map.addControl(new mapboxgl.NavigationControl());
 // const toggleableLayerIds = ['circuits','solar','SCE_Service','bg_avg_cir'];
-const layerList = document.getElementById('basemapselections');
-const inputs = layerList.getElementsByTagName('li');
-const ratioSlider = document.getElementById('slider_ratio');
-const ratioSliderValue = document.getElementById('slider_ratio_value');
+let layerList = document.getElementById('basemapselections');
+let inputs = layerList.getElementsByTagName('li');
+let ratioSlider = document.getElementById('slider_ratio');
+let ratioSliderValue = document.getElementById('slider_ratio_value');
 
 const ratioUISlider = document.getElementById('filter_ratio');
 noUiSlider.create(ratioUISlider, {
-  start: [ 0,1 ],
+  start: [ 0,53.2 ],
   connect: true,
   range: {
     'min': 0,
-    'max': 1
+    'max': 53.2
   },
   tooltips:true
 });
 
 ratioUISlider.noUiSlider.on('update', function(e){
-  let filter = ["all",["<=", 'ram_r', parseFloat(e[1])],[">=", 'ram_r', parseFloat(e[0])]];
+  let filter = ["all",["<=", 'peak_filte', parseFloat(e[1])],[">=", 'peak_filte', parseFloat(e[0])]];
   if (map.getLayer('bg_ratio')) {map.setFilter("bg_ratio",filter); } 
 });
 
@@ -69,7 +70,7 @@ function switchLayer(layer) {
         addRatio(map);
         addDisad(map); 
         map.setPaintProperty('bg_ratio', 'fill-opacity', parseInt(slider_ratio.value, 10) / 100);
-        let filter = ["all",["<=", 'ram_r', parseFloat(ratioUISlider.outerText.split('\n')[1])],[">=", 'ram_r', parseFloat(ratioUISlider.outerText.split('\n')[0])]];
+        let filter = ["all",["<=", 'peak_filte', parseFloat(ratioUISlider.outerText.split('\n')[1])],[">=", 'peak_filte', parseFloat(ratioUISlider.outerText.split('\n')[0])]];
         map.setFilter("bg_ratio",filter); 
   });
 };
@@ -79,12 +80,12 @@ function addDisad(map) {
           "type": "line",
           "source": {
               type: 'vector',
-              url: 'mapbox://dcheng0104.33grf7fi'
+              url: 'mapbox://dcheng0104.4hsrb3za'
           },
           'layout': {
             'visibility': 'visible'
           },
-          "source-layer":"bg_ratio-agv186",
+          "source-layer":"bg_ratio-26u6ra",
           "paint": {
               "line-color": "#e07a7a"
               },
@@ -99,21 +100,21 @@ function addRatio(map) {
         "type": "fill",
         "source": {
             type: 'vector',
-            url: 'mapbox://dcheng0104.33grf7fi'
+            url: 'mapbox://dcheng0104.1jlgajhk'
         },
         'layout': {
             'visibility': 'visible'
         },
-        "source-layer":"bg_ratio-agv186",
+        "source-layer":"finalgeojson",
         "paint": {
                 "fill-color": {
-                    property: 'ram_r',
+                    property: 'peak_filte',
                     stops: [
-                      [0.2,'#edf8fb'],
-                      [0.4,'#b2e2e2'],
-                      [0.6,'#66c2a4'],
-                      [0.8,'#2ca25f'],
-                      [1,'#006d2c']
+                      [3.1,'#edf8fb'],
+                      [6.9,'#b2e2e2'],
+                      [11.7,'#66c2a4'],
+                      [18.9,'#2ca25f'],
+                      [53.2,'#006d2c']
                     ]
                 },
           "fill-outline-color": "#e1cdb5",

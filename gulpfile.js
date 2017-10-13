@@ -5,6 +5,7 @@ const gulp  = require('gulp'),
 	  source   = require('vinyl-source-stream'),
 	  imagemin = require('gulp-imagemin'),
 	  uglify = require('gulp-uglify-es').default,
+      //uglify=require('gulp-uglifyjs'),
 	  buffer = require('vinyl-buffer'),
 	  sourcemaps = require('gulp-sourcemaps'), 
 	  rename = require('gulp-rename'),
@@ -12,7 +13,9 @@ const gulp  = require('gulp'),
 	  es  = require('event-stream'),
 	  cleanCSS = require('gulp-clean-css'),
 	  gutil= require('gulp-util'),
-      runSequence = require('run-sequence');
+      runSequence = require('run-sequence'),
+      transform = require('vinyl-transform'),
+      through2 = require('through2');
 
 
 const options = {
@@ -41,18 +44,41 @@ gulp.task('javascript', function() {
             .pipe(source(entry))
             .pipe(buffer())
  
-            .pipe(sourcemaps.init({loadMaps: true}))
+            //.pipe(sourcemaps.init({loadMaps: true}))
             // rename them to have "bundle as postfix"
             .pipe(rename({
                 extname: '.bundle.js'
             }))
-            .pipe(uglify())
-            .pipe(sourcemaps.write('./'))
+           // .pipe(uglify())
+           // .pipe(sourcemaps.write('./'))
             .pipe(gulp.dest('./dist'));
         });
     // create a merged stream
     return es.merge.apply(null, tasks);
 });
+
+//TOOD still need to figure out the browerfiy uglify thing, i is not defined
+
+// gulp.task('browserify', function () {
+//     gulp.src('public/script/script.js')
+//         .pipe(through2.obj(function (file, enc, next){
+//                 browserify(file.path)
+//                     //.transform('stripify')
+//                     .bundle(function(err, res){
+//                         // assumes file.contents is a Buffer
+//                         file.contents = res;
+//                         next(null, file);
+//                     });
+//             }))
+//         .pipe(gulp.dest('./dist/public/script'))
+// });
+
+// gulp.task('uglify', function() {
+//   gulp.src('./dist/public/script/script.js')
+//     .pipe(uglify())
+//     .pipe(rename("bundle.min.js"))
+//     .pipe(gulp.dest('dist/public/script'))
+// });
 
 gulp.task('images', () =>{
   return gulp.src(options.images)
