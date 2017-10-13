@@ -11,11 +11,17 @@ const gulp  = require('gulp'),
 	  browserify = require('browserify'),
 	  es  = require('event-stream'),
 	  cleanCSS = require('gulp-clean-css'),
-	  gutil= require('gulp-util');
+	  gutil= require('gulp-util'),
+      runSequence = require('run-sequence');
 
 
 const options = {
-    jsFiles : 'public/script/*.js'
+    jsFiles : 'public/script/*.js',
+    images:'public/images/*',
+    distImages:'./dist/public/images',
+    cssFiles:'public/stylesheets/*.css',
+    distCssFiles:'./dist/public/stylesheets',
+    copyFiles:['public/factor.html','public/index.html','public/script/app.js','public/script/routes.js']
 }
 gulp.task('clean', ()=>{
   return del(['dist/**/*'])
@@ -49,19 +55,30 @@ gulp.task('javascript', function() {
 });
 
 gulp.task('images', () =>{
-  return gulp.src('public/images/*')
+  return gulp.src(options.images)
         .pipe(imagemin())
-        .pipe(gulp.dest('./dist/images'))
+        .pipe(gulp.dest(options.distImages))
 });
 
 gulp.task('minify-css',() => {
-  return gulp.src('public/stylesheets/*.css')
+  return gulp.src(options.cssFiles)
     .pipe(sourcemaps.init())
     .pipe(cleanCSS())
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist/public/stylesheets'));
+    .pipe(gulp.dest(options.distCssFiles));
 });
 
 gulp.task('watch',()=> {
     gulp.watch(options.jsFiles,['javascript']);
+});
+
+// gulp.task("copy",()=>{
+//     return gulp.src(options.copyFiles, { base: './'})
+//                 .pipe(gulp.dest('./dist'));
+// });
+//copy everything to dist folder 
+gulp.task("build", ['clean'],(callback)=> {
+  runSequence('javascript','images','minify-css'); 
+    return gulp.src(options.copyFiles, { base: './'})
+                .pipe(gulp.dest('./dist'));
 });

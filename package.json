@@ -2,9 +2,9 @@
   "name": "solar_prioritization_tool2",
   "version": "1.0.0",
   "description": "",
-  "main": "public/script/app.js",
+  "main": "./dist/public/script/app.js",
   "scripts": {
-    "start": "nodemon ./public/script/app.js localhost 3000",
+    "start": "nodemon ./dist/public/script/app.js localhost 3000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -45,6 +45,7 @@
     "gulp-util": "^3.0.8",
     "imagemin": "^5.3.1",
     "nodemon": "^1.12.1",
+    "run-sequence": "^2.2.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
