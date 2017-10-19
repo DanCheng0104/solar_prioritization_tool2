@@ -24,7 +24,7 @@ const options = {
     distImages:'./dist/public/images',
     cssFiles:'public/stylesheets/*.css',
     distCssFiles:'./dist/public/stylesheets',
-    copyFiles:['public/factor.html','public/index.html','public/script/app.js','public/script/routes.js']
+    copyFiles:['public/factor.html','public/index.html','public/script/app.js','public/script/routes.js'],
 }
 gulp.task('clean', ()=>{
   return del(['dist/**/*'])
@@ -96,12 +96,14 @@ gulp.task('minify-css',() => {
 
 gulp.task('watch',()=> {
     gulp.watch(options.jsFiles,['javascript']);
+    gulp.watch(options.copyFiles,['copy']);
 });
 
-// gulp.task("copy",()=>{
-//     return gulp.src(options.copyFiles, { base: './'})
-//                 .pipe(gulp.dest('./dist'));
-// });
+
+gulp.task("copy",()=>{
+    return gulp.src(options.copyFiles, { base: './'})
+                .pipe(gulp.dest('./dist'));
+});
 //copy everything to dist folder 
 gulp.task("build", ['clean'],(callback)=> {
   runSequence('javascript','images','minify-css'); 

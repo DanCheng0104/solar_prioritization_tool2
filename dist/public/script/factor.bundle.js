@@ -48386,7 +48386,8 @@ return hooks;
 const mapboxgl = require('mapbox-gl'),
       syncMove = require('mapbox-gl-sync-move'),
       $ = require('jquery'),
-      Chart = require('chart.js');
+      Chart = require('chart.js'),
+      layer = require('./layer.js');
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGNoZW5nMDEwNCIsImEiOiJjaXE0MDh2MHQwMG9xZnhtNGg0azVybGxtIn0.7jdNnbpd8kQI3qO1HfSnUg';
 
@@ -48433,159 +48434,110 @@ map2.addControl(new mapboxgl.NavigationControl());
 map3.addControl(new mapboxgl.NavigationControl());
 map4.addControl(new mapboxgl.NavigationControl());
 map1.on('load', function () {
-      map1.addLayer({
-          "id": "bg_percent15",
-          "type": "fill",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.d4bi5x4w'
-          },
-          'layout': {
-              'visibility': 'visible'
-          },
-          "source-layer":"bg_percent15-7zu5df",
-          "paint": {
-                  "fill-color": {
-                      property: 'PERCENT15',
-                      stops: [
-                        [0.29,'#edf8fb'],
-                        [0.80,'#b2e2e2'],
-                        [1.81,'#66c2a4'],
-                        [4.55,'#2ca25f'],
-                        [10.5,'#006d2c']
-                      ]
-                  },
+  const paintOption = {
+        "fill-color": {
+           property: 'PERCENT15',
+           stops: [
+                  [0.29,'#edf8fb'],
+                  [0.80,'#b2e2e2'],
+                  [1.81,'#66c2a4'],
+                  [4.55,'#2ca25f'],
+                  [10.5,'#006d2c']
+                ]
+            },
             "fill-outline-color": "#e1cdb5",
             'fill-opacity': 1
-              }
+        };
+  if (!map1.getLayer('bg_solar')){
+    map1.addLayer(layer.noFilter('bg_solar','fill','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',paintOption));
+    map1.addLayer(layer.withFilter('map1_hover','line','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',{"line-color": "black"},["==", "FIPS", ""]));
 
-      });
+  }
+});
 
-        map1.addLayer({
-          "id": "map1_hover",
-          "type": "line",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.d4bi5x4w'
-          },
-          "source-layer":"bg_percent15-7zu5df",
-          "paint": {
-              "line-color": "black"
+map1.on('style.load', function() {
+    if (map1.getStyle().name === 'map1') {
+      const paintOption2 = {
+          "fill-color": {
+             property: 'mwh',
+             stops: [
+                    [6030.2,'#f6eff7'],
+                    [11592.69,'#bdc9e1'],
+                    [18502.01,'#67a9cf'],
+                    [27298.49,'#1c9099'],
+                    [55976,'#016c59']
+                  ]
               },
-          "filter": ["==", "FIPS", ""]
+              "fill-outline-color": "#e1cdb5",
+              'fill-opacity': 1
+          };
+      map1.addLayer(layer.noFilter('bg_demand','fill','mapbox://dcheng0104.10mik2bs','cirgroupgeojson','visible',paintOption2));      
+    }
+    else if(map1.getStyle().name === 'Mapbox Dark' & !map1.getLayer('bg_solar')){
+      const paintOption = {
+            "fill-color": {
+               property: 'PERCENT15',
+               stops: [
+                      [0.29,'#edf8fb'],
+                      [0.80,'#b2e2e2'],
+                      [1.81,'#66c2a4'],
+                      [4.55,'#2ca25f'],
+                      [10.5,'#006d2c']
+                    ]
+                },
+                "fill-outline-color": "#e1cdb5",
+                'fill-opacity': 1
+            };
 
-      }); 
+      map1.addLayer(layer.noFilter('bg_solar','fill','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',paintOption));
+      map1.addLayer(layer.withFilter('map1_hover','line','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',{"line-color": "black"},["==", "FIPS", ""]));
+
+    }
+
+
 });
 
 map2.on('load', function () {
-      map2.addLayer({
-          "id": "bg_solar",
-          "type": "fill",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.72rdrfrm'
-          },
-          'layout': {
-              'visibility': 'visible'
-          },
-          "source-layer":"bg_solar_update1-4gt26j",
-          
-          "paint": {
-                  "fill-color": {
-                      property: 'netsolar',
-                      stops: [
-                        [6291.66,'#edf8fb'],
-                        [19164,'#b3cde3'],
-                        [52151.8,'#8c96c6'],
-                        [109041,'#8856a7'],
-                        [375473.984,'#810f7c']
-                      ]
-                  },
-            "fill-outline-color": "#e1cdb5",
-            'fill-opacity': 1
-              }
-      });
-      map2.setFilter('bg_solar', ['!in','NET_SOLAR_',-7777,-8888,-9999]);
-      map2.addLayer({
-          "id": "map2_hover",
-          "type": "line",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.7wrd3lha'
-          },
-          "source-layer":"bg_solar-by3e7k",
-          "paint": {
-              "line-color": "black"
-              },
-          "filter": ["==", "FIPS", ""]
-
-      }); 
+  const paintOption ={
+        "fill-color": {
+            property: 'netsolar',
+            stops: [
+              [6291.66,'#edf8fb'],
+              [19164,'#b3cde3'],
+              [52151.8,'#8c96c6'],
+              [109041,'#8856a7'],
+              [375473.984,'#810f7c']
+            ]
+          }};
+  map2.addLayer(layer.noFilter('bg_solar','fill','mapbox://dcheng0104.72rdrfrm','bg_solar_update1-4gt26j','visible',paintOption));
+  map2.setFilter('bg_solar', ['!in','NET_SOLAR_',-7777,-8888,-9999]);
+  map2.addLayer(layer.withFilter('map2_hover','line','mapbox://dcheng0104.7wrd3lha','bg_solar-by3e7k','visible',{"line-color": "black"},["==", "FIPS", ""]));     
  });
 
 map3.on('load', function () {
-      map3.addLayer({
-          "id": "bg_disadv",
-          "type": "fill",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.9zit5n1p'
-          },
-          'layout': {
-              'visibility': 'visible'
-          },
-          "source-layer":"bg_disad-ac3cl4",
-          "paint": {
-                  "fill-color": {
-                      property: 'score',
-                      stops: [
-                        [1,'#fee5d9'],
-                        [2,'#fcae91'],
-                        [3,'#fb6a4a'],
-                        [4,'#de2d26'],
-                        [5,'#a50f15'],
-                      ]
+  const paintOption = {
+        "fill-color": {
+            property: 'score',
+            stops: [
+              [1,'#fee5d9'],
+              [2,'#fcae91'],
+              [3,'#fb6a4a'],
+              [4,'#de2d26'],
+              [5,'#a50f15'],
+            ]
 
-                  },
-                  "fill-outline-color": "#e1cdb5",
-            'fill-opacity': 1
-              }  
-      });
-      map3.addLayer({
-          "id": "map3_hover",
-          "type": "line",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.0ah4kd9n'
-          },
-          "source-layer":"bg-9wo2yu",
-          "paint": {
-              "line-color": "black"
-              },
-          "filter": ["==", "ID", ""]
-
-      });     
-
-      map3.addLayer({
-          "id": "map3_base",
-          "type": "line",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.d4bi5x4w'
-          },          
-          'layout': {
-              'visibility': 'visible'
-          },
-          "source-layer":"bg_percent15-7zu5df",
-          "paint": {
-              "line-color": "#fee5d9"
-              },
-
-      }); 
+        },
+        "fill-outline-color": "#e1cdb5",
+        'fill-opacity': 1
+        } ;
+  map3.addLayer(layer.noFilter('bg_disadv','fill','mapbox://dcheng0104.9zit5n1p','bg_disad-ac3cl4','visible',paintOption));
+  map3.addLayer(layer.withFilter('map3_hover','line','mapbox://dcheng0104.0ah4kd9n','bg-9wo2yu','visible',{"line-color": "black"},["==", "ID", ""]));  
+  map3.addLayer(layer.noFilter('map3_base','line','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',{"line-color": "#fee5d9"}));  
 
 });
 
 function createBarChart(data){
-  var ctx = document.getElementById('pie').getContext('2d');
+  var ctx = $('#pie')[0].getContext('2d');
 
   var myChart = new Chart(ctx, {
     type: 'bar',
@@ -48611,7 +48563,7 @@ function createBarChart(data){
 
 }
 map1.on("click",function(e){
-  const queryLayers = ['bg_percent15'];
+  const queryLayers = ['bg_solar'];
   let features = map1.queryRenderedFeatures(e.point, { layers: queryLayers});
   if (features.length){
     map1.setFilter("map1_hover", ["==", "FIPS", features[0].properties.FIPS]);   
@@ -48694,240 +48646,159 @@ map3.on("click", function(e) {
 
 
 map4.on('load', function () {
-      map4.addLayer({
-          "id": "bg_base",
-          "type": "fill",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.0ah4kd9n'
-          },
-          'layout': {
-              'visibility': 'none'
-          },
-          "source-layer":"bg-9wo2yu",
-          "paint": {
-                  "fill-color": {
-                      property: 'INCOME_QUI',
-                      stops: [
-                        [1,'#feebe2'],
-                        [2,'#fbb4b9'],
-                        [3,'#f768a1'],
-                        [4,'#c51b8a'],
-                        [5,'#7a0177'],
-                      ]
+  const paintOption1 = {
+        "fill-color": {
+            property: 'INCOME_QUI',
+            stops: [
+              [1,'#feebe2'],
+              [2,'#fbb4b9'],
+              [3,'#f768a1'],
+              [4,'#c51b8a'],
+              [5,'#7a0177'],
+            ]
 
-                  },
-                  "fill-outline-color": "#e1cdb5",
-            'fill-opacity': 1
-              }  
-      });
-      map4.addLayer({
-          "id": "bg_pop",
-          "type": "fill",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.0ah4kd9n'
-          },
-          'layout': {
-              'visibility': 'visible'
-          },
-          "source-layer":"bg-9wo2yu",
-          "paint": {
-                  "fill-color": {
-                      property: 'POP2010',
-                      stops: [
-                        [1119,'#f6eff7'],
-                        [1697,'#bdc9e1'],
-                        [2436,'#67a9cf'],
-                        [3847,'#1c9099'],
-                        [9344,'#016c59'],
-                      ]
+        },
+        "fill-outline-color": "#e1cdb5",
+        'fill-opacity': 1
+       } 
+  map4.addLayer(layer.noFilter('bg_income','fill','mapbox://dcheng0104.0ah4kd9n','bg-9wo2yu','none',paintOption1));
+  const paintOption2 =  {
+      "fill-color": {
+          property: 'POP2010',
+          stops: [
+            [1119,'#f6eff7'],
+            [1697,'#bdc9e1'],
+            [2436,'#67a9cf'],
+            [3847,'#1c9099'],
+            [9344,'#016c59'],
+          ]
 
-                  },
-                  "fill-outline-color": "#e1cdb5",
-            'fill-opacity': 1
-              }  
-      });
-      map4.addLayer({
-          "id": "map4_hover",
-          "type": "line",
-          "source": {
-              type: 'vector',
-              url: 'mapbox://dcheng0104.0ah4kd9n'
-          },
-          "source-layer":"bg-9wo2yu",
-          "paint": {
-              "line-color": "black"
-              },
-          "filter": ["==", "ID", ""]
-
-      });     
+        },
+        "fill-outline-color": "#e1cdb5",
+        'fill-opacity': 1
+      }  
+    map4.addLayer(layer.noFilter('bg_pop','fill','mapbox://dcheng0104.0ah4kd9n','bg-9wo2yu','visible',paintOption2));
+    map4.addLayer(layer.withFilter('map4_hover','line','mapbox://dcheng0104.0ah4kd9n','bg-9wo2yu','visible',{"line-color": "black"},["==", "ID", ""]));
 
 });
 
-// map3 description
-let atag3 =  document.getElementById('info3');
-let close3 = document.getElementById('close3');
-let modal3 = document.getElementById('modal3');
+const infos = ['#info1','#info2','#info3','#info4'];
 
-atag3.addEventListener('click', openInfo3);
-close3.addEventListener('click', closeInfo3);
-function openInfo3(){
-  modal3.style.display = "block";
-}
-function closeInfo3() {
-    modal3.style.display = "none";
-}
+infos.forEach((info,index)=>{
+  $(info).on('click', function(){$(`#modal${index+1}`).show();});
+})
 
-// map4 description
-let atag4 =  document.getElementById('info4');
-let close4 = document.getElementById('close4');
-let modal4 = document.getElementById('modal4');
+const closes = ['#close1','#close2','#close3','#close4'];
 
-atag4.addEventListener('click', openInfo4);
-close4.addEventListener('click', closeInfo4);
-function openInfo4(){
-  modal4.style.display = "block";
-}
-function closeInfo4() {
-    modal4.style.display = "none";
-}
-// map1 description
-
-let atag1 =  document.getElementById('info1');
-let close1 = document.getElementById('close1');
-let modal1 = document.getElementById('modal1');
-atag1.addEventListener('click', openInfo1);
-close1.addEventListener('click', closeInfo1);
-function openInfo1(){
-  modal1.style.display = "block";
-}
-function closeInfo1() {
-    modal1.style.display = "none";
-}
-// map2 description
-let atag2 =  document.getElementById('info2');
-let close2 = document.getElementById('close2');
-let modal2 = document.getElementById('modal2');
-atag2.addEventListener('click', openInfo2);
-close2.addEventListener('click', closeInfo2);
-function openInfo2(){
-  modal2.style.display = "block";
-}
-function closeInfo2() {
-    modal2.style.display = "none";
-}
+closes.forEach((close,index)=>{
+  $(close).on('click', function(){$(`#modal${index+1}`).hide();});
+})
 
 $('#income').click(function() {
-  console.log('back');
-  map4.setLayoutProperty('bg_pop', 'visibility', 'none');
-  map4.setLayoutProperty('bg_base', 'visibility', 'visible');
-  $('#pop')[0].checked= false;
-  document.getElementById('popLegend').style.display = 'none';
-  document.getElementById('incomeLegend').style.display = '';
+  switchMap4('income');
 });
 
 $('#pop').click(function() {
-  console.log('back');
-  map4.setLayoutProperty('bg_pop', 'visibility', 'visible');
-  map4.setLayoutProperty('bg_base', 'visibility', 'none');
-  $('#income')[0].checked= false;
-  document.getElementById('popLegend').style.display = '';
-  document.getElementById('incomeLegend').style.display = 'none';
-
+  switchMap4('pop');
 });
-let arrow1 = document.getElementById('arrow1')
-arrow1.addEventListener('click', switchLegend1);
 
-function switchLegend1(){
-  let height = document.getElementById("map1_legend").style.height;
-  let legend = document.getElementById("map1_legend").style;
-  let info = document.getElementById("info1").style;
-  let arrow = document.getElementById("arrow1").children[0];
-  let body = document.getElementById("body1").style;
+$('#demand').click(function() {
+   map1.setStyle('mapbox://styles/dcheng0104/cj8xdcn6kh1gf2rqntjfed2ek');
+   switchMap1('demand');
+});
+
+$('#solar').click(function() {
+   map1.setStyle('mapbox://styles/mapbox/dark-v9');
+   switchMap1('solar');
+});
+
+function switchMap1(displayLayer){
+  const hideLayer = (displayLayer === 'solar')?'demand' :'solar';  
+  // map4.setLayoutProperty(`bg_${hideLayer}`, 'visibility', 'none');
+  // map4.setLayoutProperty(`bg_${displayLayer}`, 'visibility', 'visible');
+  $(`#${hideLayer}`)[0].checked= false;
+  $(`#${hideLayer}Legend`).hide();
+  $(`#${displayLayer}Legend`).show();
+}
+function switchMap4(displayLayer){
+  const hideLayer = (displayLayer === 'pop')?'income' :'pop';
+  map4.setLayoutProperty(`bg_${hideLayer}`, 'visibility', 'none');
+  map4.setLayoutProperty(`bg_${displayLayer}`, 'visibility', 'visible');
+  $(`#${hideLayer}`)[0].checked= false;
+  $(`#${hideLayer}Legend`).hide();
+  $(`#${displayLayer}Legend`).show();
+
+}
+function switchLegend(number){
+  const height = $(`#map${number}_legend`).css('height');
   if (height =="" || height !=="30px") {
-    legend.height = "30px";
-    info.display = "none";
-    body.display = "none";
-    arrow.className='glyphicon glyphicon-chevron-up';
+    $(`#map${number}_legend`).css('height',"30px");
+    $(`#info${number}`).hide();
+    $(`#body${number}`).hide();
+    $(`#arrow${number}`)[0].children[0].className='glyphicon glyphicon-chevron-up';
   }
   else {
-    legend.height = "200px";
-    info.display = "";  
-    body.display = "";
-    arrow.className='glyphicon glyphicon-chevron-down'; 
+    $(`#map${number}_legend`).css('height',"200px");
+    $(`#info${number}`).show();
+    $(`#body${number}`).show();
+    $(`#arrow${number}`)[0].children[0].className='glyphicon glyphicon-chevron-down';
   }
 }
 
-let arrow2 = document.getElementById('arrow2')
-arrow2.addEventListener('click', switchLegend2);
+const arrows = ['#arrow1','#arrow2','#arrow3','#arrow4'];
 
-function switchLegend2(){
-  let height = document.getElementById("map2_legend").style.height;
-  let legend = document.getElementById("map2_legend").style;
-  let info = document.getElementById("info2").style;
-  let arrow = document.getElementById("arrow2").children[0];
-  let body = document.getElementById("body2").style;
-  if (height =="" || height !=="30px") {
-    legend.height = "30px";
-    info.display = "none";
-    body.display = "none";
-    arrow.className='glyphicon glyphicon-chevron-up';
-  }
-  else {
-    legend.height = "200px";
-    info.display = "";  
-    arrow.className='glyphicon glyphicon-chevron-down'; 
-    body.display = ""; 
-  }
-}
+arrows.forEach((arrow,index)=>{
+  $(arrow).on('click', function(){switchLegend(index+1)});
+})
 
-let arrow3 = document.getElementById('arrow3')
-arrow3.addEventListener('click', switchLegend3);
 
-function switchLegend3(){
-  let height = document.getElementById("map3_legend").style.height;
-  let legend = document.getElementById("map3_legend").style;
-  let info = document.getElementById("info3").style;
-  let arrow = document.getElementById("arrow3").children[0];
-  let body = document.getElementById("body3").style;
-  if (height =="" || height !=="30px") {
-    legend.height = "30px";
-    info.display = "none";
-    body.display = "none";
-    arrow.className='glyphicon glyphicon-chevron-up';
-  }
-  else {
-    legend.height = "200px";
-    info.display = "";  
-    arrow.className='glyphicon glyphicon-chevron-down'; 
-    body.display = ""; 
-  }
-}
 
-let arrow4 = document.getElementById('arrow4')
-arrow4.addEventListener('click', switchLegend4);
 
-function switchLegend4(){
-  let height = document.getElementById("map4_legend").style.height;
-  let legend = document.getElementById("map4_legend").style;
-  let info = document.getElementById("info4").style;
-  let arrow = document.getElementById("arrow4").children[0];
-  let body = document.getElementById("body4").style;
-  if (height =="" || height !=="30px") {
-    legend.height = "30px";
-    info.display = "none";
-    body.display = "none";
-    arrow.className='glyphicon glyphicon-chevron-up';
-  }
-  else {
-    legend.height = "200px";
-    info.display = ""; 
-    body.display = ""; 
-    arrow.className='glyphicon glyphicon-chevron-down'; 
-  }
+
+
+},{"./layer.js":62,"chart.js":1,"jquery":57,"mapbox-gl":59,"mapbox-gl-sync-move":58}],62:[function(require,module,exports){
+module.exports = {
+	withFilter : function (mapId,mapType,url,sourceLayer,visibility,paintOption,filterOption){
+		const layer = {
+	      "id": mapId,
+	      "type": mapType,
+	      "source": {
+	          type: 'vector',
+	          url: url
+	      },
+	      'layout': {
+	        'visibility': visibility
+	      },
+	      "source-layer":sourceLayer,
+	      "paint": paintOption,
+	      "filter": filterOption
+
+	  	}
+
+	  return layer;
+	},
+
+	noFilter : function (mapId,mapType,url,sourceLayer,visibility,paintOption){
+		const layer = {
+	      "id": mapId,
+	      "type": mapType,
+	      "source": {
+	          type: 'vector',
+	          url: url
+	      },
+	      'layout': {
+	        'visibility': visibility
+	      },
+	      "source-layer":sourceLayer,
+	      "paint": paintOption
+
+	  	}
+
+	  return layer;
+	}  
+
 }
 
 
 
-},{"chart.js":1,"jquery":57,"mapbox-gl":59,"mapbox-gl-sync-move":58}]},{},[61]);
+},{}]},{},[61]);

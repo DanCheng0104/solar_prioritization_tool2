@@ -25,15 +25,29 @@
     </div>
     <div id ='return'><a href='index.html'><i class="fa fa-arrow-circle-left fa-3x" aria-hidden="true"></i></a></div>
     <div id= 'map1_legend' class = 'legend'>
-       <h3 class ='mapTitle'>15% Penetration Capacity - SCE <a href="#" id = 'arrow1' class = 'arrow'><span class="glyphicon glyphicon-chevron-down"></span></a></h3>
+       <h3 class ='mapTitle'>Electricity Generation and Demand<a href="#" id = 'arrow1' class = 'arrow'><span class="glyphicon glyphicon-chevron-down"></span></a></h3>
        <div id = 'body1'>
-       <h4 class ='legendTitle' >Megawatt</h4>
-       <div><span style='background-color: #edf8fb'></span>0 - 0.29</div>
-       <div><span style='background-color: #b2e2e2'></span>0.291 - 0.80</div>
-       <div><span style='background-color: #66c2a4'></span>0.801 - 1.81</div>
-       <div><span style='background-color: #2ca25f'></span>1.811 - 4.55</div>
-       <div><span style='background-color: #006d2c'></span>4.551 - 10.50</div>
-       <div  class = 'info'>
+       <label>
+            <input type="radio"  id = 'solar' value="solar" checked/>Net Solar Potential(MWh)
+       </label>
+       <label class = 'label2'>
+            <input type="radio"  id = 'demand' value="demand" />Demand(MWh)
+       </label>
+       <div id = 'solarLegend'>
+         <div><span style='background-color: #edf8fb'></span>0 - 0.29</div>
+         <div><span style='background-color: #b2e2e2'></span>0.291 - 0.80</div>
+         <div><span style='background-color: #66c2a4'></span>0.801 - 1.81</div>
+         <div><span style='background-color: #2ca25f'></span>1.811 - 4.55</div>
+         <div><span style='background-color: #006d2c'></span>4.551 - 10.51</div>
+       </div>
+       <div id = 'demandLegend' style = 'display: none'>
+         <div><span style='background-color: #f6eff7'></span>81.5 - 6030.2</div>
+         <div><span style='background-color: #bdc9e1'></span>6030.21 - 11592.69</div>
+         <div><span style='background-color: #67a9cf'></span>11592.7 - 18502.01</div>
+         <div><span style='background-color: #1c9099'></span>18502.02 - 27298.49</div>
+         <div><span style='background-color: #016c59'></span>27298.5 - 55976</div>
+       </div>
+       <div class = 'info'>
         <a href="#" id = 'info1'>
           <span class="glyphicon glyphicon-info-sign"></span>
         </a>
@@ -46,12 +60,14 @@
        </div>
        <div id = 'body2'>
        <h4 class ='legendTitle' >Net Solar Potential (kwh)</h4>
+
        <div><span style='background-color: #edf8fb'></span>< 6,291,660</div>
        <div><span style='background-color: #b3cde3'></span>6,291,661 ~ 19,164,000</div>
        <div><span style='background-color: #8c96c6'></span>19,164,001 ~ 52,151,800</div>
        <div><span style='background-color: #8856a7'></span>52,151,801 ~ 109,041,000</div>
        <div><span style='background-color: #810f7c'></span>109,041,001 ~ 375,473,984</div>    
        <div><img src="images/mask_78_h.svg">No Data     <img src="images/mask_9_h.svg">Masked due to privacy</div>    
+
        <div  class = 'info'>
         <a href="#" id = 'info2'>
           <span class="glyphicon glyphicon-info-sign"></span>
@@ -81,7 +97,7 @@
        <label>
             <input type="radio"  id = 'pop' value="pop" checked/>  Population
        </label>
-       <label id = 'label2'>
+       <label class = 'label2'>
             <input type="radio"  id = 'income' value="income" />   Income
        </label>
        <div id = 'incomeLegend' style = 'display: none'>
