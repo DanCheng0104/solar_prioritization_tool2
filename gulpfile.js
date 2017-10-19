@@ -110,3 +110,5 @@ gulp.task("build", ['clean'],(callback)=> {
     return gulp.src(options.copyFiles, { base: './'})
                 .pipe(gulp.dest('./dist'));
 });
+
+gulp.task('default', ['build']);
