@@ -2,7 +2,8 @@ const mapboxgl = require('mapbox-gl'),
       syncMove = require('mapbox-gl-sync-move'),
       $ = require('jquery'),
       Chart = require('chart.js'),
-      layer = require('./layer.js');
+      layer = require('./layer.js'),
+      Combinatorics = require('js-combinatorics');;
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGNoZW5nMDEwNCIsImEiOiJjaXE0MDh2MHQwMG9xZnhtNGg0azVybGxtIn0.7jdNnbpd8kQI3qO1HfSnUg';
 
@@ -37,19 +38,24 @@ const map4 = new mapboxgl.Map({
     center: [-118.246911, 34.056604]
 });
 
-syncMove(map1, map2);
-syncMove(map1, map3);
-syncMove(map1, map4);
-syncMove(map2, map4);
-syncMove(map2, map3);
-syncMove(map3, map4);
+const maps = [map1,map2,map3,map4];
+//sync maps
+const cmb = Combinatorics.combination(maps,2);
+cmb.forEach(function(a){ 
+  syncMove(a[0],a[1]);
+});
+//add navigation control for each map
+maps.forEach((map)=>{map.addControl(new mapboxgl.NavigationControl());})
 
-map1.addControl(new mapboxgl.NavigationControl());
-map2.addControl(new mapboxgl.NavigationControl());
-map3.addControl(new mapboxgl.NavigationControl());
-map4.addControl(new mapboxgl.NavigationControl());
+const arrows = ['#arrow1','#arrow2','#arrow3','#arrow4'];
+
+arrows.forEach((arrow,index)=>{
+  $(arrow).on('click', function(){switchLegend(index+1)});
+})
+
 map1.on('load', function () {
-  const paintOption = {
+  if (!map1.getLayer('bg_solar')){
+      const paintOption = {
         "fill-color": {
            property: 'PERCENT15',
            stops: [
@@ -63,9 +69,8 @@ map1.on('load', function () {
             "fill-outline-color": "#e1cdb5",
             'fill-opacity': 1
         };
-  if (!map1.getLayer('bg_solar')){
-    map1.addLayer(layer.noFilter('bg_solar','fill','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',paintOption));
-    map1.addLayer(layer.withFilter('map1_hover','line','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',{"line-color": "black"},["==", "FIPS", ""]));
+      map1.addLayer(layer.noFilter('bg_solar','fill','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',paintOption));
+      map1.addLayer(layer.withFilter('map1_hover','line','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',{"line-color": "black"},["==", "FIPS", ""]));
 
   }
 });
@@ -86,7 +91,8 @@ map1.on('style.load', function() {
               "fill-outline-color": "#e1cdb5",
               'fill-opacity': 1
           };
-      map1.addLayer(layer.noFilter('bg_demand','fill','mapbox://dcheng0104.10mik2bs','cirgroupgeojson','visible',paintOption2));      
+      map1.addLayer(layer.noFilter('bg_demand','fill','mapbox://dcheng0104.10mik2bs','cirgroupgeojson','visible',paintOption2));   
+      map1.addLayer(layer.withFilter('bg_demandHover','line','mapbox://dcheng0104.10mik2bs','cirgroupgeojson','visible',{"line-color": "black"},["==", "FID", ""]));   
     }
     else if(map1.getStyle().name === 'Mapbox Dark' & !map1.getLayer('bg_solar')){
       const paintOption = {
@@ -178,25 +184,36 @@ function createBarChart(data){
 
 }
 map1.on("click",function(e){
-  const queryLayers = ['bg_solar'];
+  let queryLayers,filter,filterLayer,propDic;
+  if (map1.getLayer('bg_solar')) {
+      queryLayers = ['bg_solar'];
+      filter = 'FIPS';
+      propDic = {'AREA_SUITA':'Suitable Solar Rooftop Area (sqft)','BLD_TOTAL':'Total Rooftop Area (sqft)'};
+      filterLayer = 'map1_hover';
+    }
+  else{
+      queryLayers = ['bg_demand'];
+      filter = 'FID';
+      propDic = {'peak_filte':'Potential Net Solar Exports (Peak, in MW)','mwh':'Total Demand (mwh)'};
+      filterLayer = 'bg_demandHover';
+  }
   let features = map1.queryRenderedFeatures(e.point, { layers: queryLayers});
   if (features.length){
-    map1.setFilter("map1_hover", ["==", "FIPS", features[0].properties.FIPS]);   
-    let propDic = {'AREA_SUITA':'Suitable Solar Rooftop Area','BLD_TOTAL':'Total Rooftop Area'};
+    map1.setFilter(filterLayer, ["==", filter, features[0].properties[filter]]);   
     let html = '<div>';
     Object.keys(propDic).forEach((elem)=>{
-        html = html + '<div style = "background-color:#e4dfdf">' + propDic[elem] + '  :</div>' +'<div>'+(+features[0].properties[elem.toUpperCase()].toFixed(0)).toLocaleString('en') + ' sqft</div></div><div>'
+        html = html + '<div style = "background-color:#e4dfdf">' + propDic[elem] + '  :</div>' +'<div>'+(+features[0].properties[elem].toFixed(2)).toLocaleString('en') + ' sqft</div></div><div>'
          },propDic,features)
          html=html.slice(0,html.length-5);
          let popup = new mapboxgl.Popup()
                         .setLngLat(map1.unproject(e.point))
                         .setHTML(html)
                         .addTo(map1);
-      } else {
-        console.log('re');
-        map1.setFilter("map1_hover", ["==", "FIPS", ""]);       
-      }         
+    } else {
+        map1.setFilter(filterLayer, ["==", filter, ""]);       
+    }  
   
+
 });
 
 map2.on("click", function(e) {
@@ -329,8 +346,6 @@ $('#solar').click(function() {
 
 function switchMap1(displayLayer){
   const hideLayer = (displayLayer === 'solar')?'demand' :'solar';  
-  // map4.setLayoutProperty(`bg_${hideLayer}`, 'visibility', 'none');
-  // map4.setLayoutProperty(`bg_${displayLayer}`, 'visibility', 'visible');
   $(`#${hideLayer}`)[0].checked= false;
   $(`#${hideLayer}Legend`).hide();
   $(`#${displayLayer}Legend`).show();
@@ -360,11 +375,6 @@ function switchLegend(number){
   }
 }
 
-const arrows = ['#arrow1','#arrow2','#arrow3','#arrow4'];
-
-arrows.forEach((arrow,index)=>{
-  $(arrow).on('click', function(){switchLegend(index+1)});
-})
 
 
 

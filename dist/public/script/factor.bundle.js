@@ -12359,7 +12359,7 @@ module.exports = function(Chart) {
 	Chart.scaleService.registerScaleType('time', TimeScale, defaultConfig);
 };
 
-},{"../core/core.defaults":19,"../helpers/index":39,"moment":60}],52:[function(require,module,exports){
+},{"../core/core.defaults":19,"../helpers/index":39,"moment":61}],52:[function(require,module,exports){
 /* MIT license */
 var colorNames = require('color-name');
 
@@ -24272,6 +24272,534 @@ return jQuery;
 } );
 
 },{}],58:[function(require,module,exports){
+/*
+ * $Id: combinatorics.js,v 0.25 2013/03/11 15:42:14 dankogai Exp dankogai $
+ *
+ *  Licensed under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ *
+ *  References:
+ *    http://www.ruby-doc.org/core-2.0/Array.html#method-i-combination
+ *    http://www.ruby-doc.org/core-2.0/Array.html#method-i-permutation
+ *    http://en.wikipedia.org/wiki/Factorial_number_system
+ */
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
+    } else {
+        root.Combinatorics = factory();
+    }
+}(this, function () {
+    'use strict';
+    var version = "0.5.2";
+    /* combinatory arithmetics */
+    var P = function(m, n) {
+        var p = 1;
+        while (n--) p *= m--;
+        return p;
+    };
+    var C = function(m, n) {
+        if (n > m) {
+            return 0;
+        }
+        return P(m, n) / P(n, n);
+    };
+    var factorial = function(n) {
+        return P(n, n);
+    };
+    var factoradic = function(n, d) {
+        var f = 1;
+        if (!d) {
+            for (d = 1; f < n; f *= ++d);
+            if (f > n) f /= d--;
+        } else {
+            f = factorial(d);
+        }
+        var result = [0];
+        for (; d; f /= d--) {
+            result[d] = Math.floor(n / f);
+            n %= f;
+        }
+        return result;
+    };
+    /* common methods */
+    var addProperties = function(dst, src) {
+        Object.keys(src).forEach(function(p) {
+            Object.defineProperty(dst, p, {
+                value: src[p],
+                configurable: p == 'next'
+            });
+        });
+    };
+    var hideProperty = function(o, p) {
+        Object.defineProperty(o, p, {
+            writable: true
+        });
+    };
+    var toArray = function(f) {
+        var e, result = [];
+        this.init();
+        while (e = this.next()) result.push(f ? f(e) : e);
+        this.init();
+        return result;
+    };
+    var common = {
+        toArray: toArray,
+        map: toArray,
+        forEach: function(f) {
+            var e;
+            this.init();
+            while (e = this.next()) f(e);
+            this.init();
+        },
+        filter: function(f) {
+            var e, result = [];
+            this.init();
+            while (e = this.next()) if (f(e)) result.push(e);
+            this.init();
+            return result;
+        },
+        lazyMap: function(f) {
+            this._lazyMap = f;
+            return this;
+        },
+        lazyFilter: function(f) {
+            Object.defineProperty(this, 'next', {
+                writable: true
+            });
+            if (typeof f !== 'function') {
+                this.next = this._next;
+            } else {
+                if (typeof (this._next) !== 'function') {
+                    this._next = this.next;
+                }
+                var _next = this._next.bind(this);
+                this.next = (function() {
+                    var e;
+                    while (e = _next()) {
+                        if (f(e))
+                            return e;
+                    }
+                    return e;
+                }).bind(this);
+            }
+            Object.defineProperty(this, 'next', {
+                writable: false
+            });
+            return this;
+        }
+
+    };
+    /* power set */
+    var power = function(ary, fun) {
+        var size = 1 << ary.length,
+            sizeOf = function() {
+                return size;
+            },
+            that = Object.create(ary.slice(), {
+                length: {
+                    get: sizeOf
+                }
+            });
+        hideProperty(that, 'index');
+        addProperties(that, {
+            valueOf: sizeOf,
+            init: function() {
+                that.index = 0;
+            },
+            nth: function(n) {
+                if (n >= size) return;
+                var i = 0,
+                    result = [];
+                for (; n; n >>>= 1, i++) if (n & 1) result.push(this[i]);
+                return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+            },
+            next: function() {
+                return this.nth(this.index++);
+            }
+        });
+        addProperties(that, common);
+        that.init();
+        return (typeof (fun) === 'function') ? that.map(fun) : that;
+    };
+    /* combination */
+    var nextIndex = function(n) {
+        var smallest = n & -n,
+            ripple = n + smallest,
+            new_smallest = ripple & -ripple,
+            ones = ((new_smallest / smallest) >> 1) - 1;
+        return ripple | ones;
+    };
+    var combination = function(ary, nelem, fun) {
+        if (!nelem) nelem = ary.length;
+        if (nelem < 1) throw new RangeError;
+        if (nelem > ary.length) throw new RangeError;
+        var first = (1 << nelem) - 1,
+            size = C(ary.length, nelem),
+            maxIndex = 1 << ary.length,
+            sizeOf = function() {
+                return size;
+            },
+            that = Object.create(ary.slice(), {
+                length: {
+                    get: sizeOf
+                }
+            });
+        hideProperty(that, 'index');
+        addProperties(that, {
+            valueOf: sizeOf,
+            init: function() {
+                this.index = first;
+            },
+            next: function() {
+                if (this.index >= maxIndex) return;
+                var i = 0,
+                    n = this.index,
+                    result = [];
+                for (; n; n >>>= 1, i++) {
+                    if (n & 1) result[result.length] = this[i];
+                }
+
+                this.index = nextIndex(this.index);
+                return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+            }
+        });
+        addProperties(that, common);
+        that.init();
+        return (typeof (fun) === 'function') ? that.map(fun) : that;
+    };
+    /* bigcombination */
+    var bigNextIndex = function(n, nelem) {
+
+        var result = n;
+        var j = nelem;
+        var i = 0;
+        for (i = result.length - 1; i >= 0; i--) {
+            if (result[i] == 1) {
+                j--;
+            } else {
+                break;
+            }
+        } 
+        if (j == 0) {
+            // Overflow
+            result[result.length] = 1;
+            for (var k = result.length - 2; k >= 0; k--) {
+                result[k] = (k < nelem-1)?1:0;
+            }
+        } else {
+            // Normal
+
+            // first zero after 1
+            var i1 = -1;
+            var i0 = -1;
+            for (var i = 0; i < result.length; i++) {
+                if (result[i] == 0 && i1 != -1) {
+                    i0 = i;
+                }
+                if (result[i] == 1) {
+                    i1 = i;
+                }
+                if (i0 != -1 && i1 != -1) {
+                    result[i0] = 1;
+                    result[i1] = 0;
+                    break;
+                }
+            }
+
+            j = nelem;
+            for (var i = result.length - 1; i >= i1; i--) {
+                if (result[i] == 1)
+                    j--;
+            }
+            for (var i = 0; i < i1; i++) {
+                result[i] = (i < j)?1:0;
+            }
+        }
+
+        return result;
+
+    };
+    var buildFirst = function(nelem) {
+        var result = [];
+        for (var i = 0; i < nelem; i++) {
+            result[i] = 1;
+        }
+        result[0] = 1;
+        return result;
+    };
+    var bigCombination = function(ary, nelem, fun) {
+        if (!nelem) nelem = ary.length;
+        if (nelem < 1) throw new RangeError;
+        if (nelem > ary.length) throw new RangeError;
+        var first = buildFirst(nelem),
+            size = C(ary.length, nelem),
+            maxIndex = ary.length,
+            sizeOf = function() {
+                return size;
+            },
+            that = Object.create(ary.slice(), {
+                length: {
+                    get: sizeOf
+                }
+            });
+        hideProperty(that, 'index');
+        addProperties(that, {
+            valueOf: sizeOf,
+            init: function() {
+                this.index = first.concat();
+            },
+            next: function() {
+                if (this.index.length > maxIndex) return;
+                var i = 0,
+                    n = this.index,
+                    result = [];
+                for (var j = 0; j < n.length; j++, i++) {
+                    if (n[j])
+                        result[result.length] = this[i];
+                }
+                bigNextIndex(this.index, nelem);
+                return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+            }
+        });
+        addProperties(that, common);
+        that.init();
+        return (typeof (fun) === 'function') ? that.map(fun) : that;
+    };
+    /* permutation */
+    var _permutation = function(ary) {
+        var that = ary.slice(),
+            size = factorial(that.length);
+        that.index = 0;
+        that.next = function() {
+            if (this.index >= size) return;
+            var copy = this.slice(),
+                digits = factoradic(this.index, this.length),
+                result = [],
+                i = this.length - 1;
+            for (; i >= 0; --i) result.push(copy.splice(digits[i], 1)[0]);
+            this.index++;
+            return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+        };
+        return that;
+    };
+    // which is really a permutation of combination
+    var permutation = function(ary, nelem, fun) {
+        if (!nelem) nelem = ary.length;
+        if (nelem < 1) throw new RangeError;
+        if (nelem > ary.length) throw new RangeError;
+        var size = P(ary.length, nelem),
+            sizeOf = function() {
+                return size;
+            },
+            that = Object.create(ary.slice(), {
+                length: {
+                    get: sizeOf
+                }
+            });
+        hideProperty(that, 'cmb');
+        hideProperty(that, 'per');
+        addProperties(that, {
+            valueOf: function() {
+                return size;
+            },
+            init: function() {
+                this.cmb = combination(ary, nelem);
+                this.per = _permutation(this.cmb.next());
+            },
+            next: function() {
+                var result = this.per.next();
+                if (!result) {
+                    var cmb = this.cmb.next();
+                    if (!cmb) return;
+                    this.per = _permutation(cmb);
+                    return this.next();
+                }
+                return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+            }
+        });
+        addProperties(that, common);
+        that.init();
+        return (typeof (fun) === 'function') ? that.map(fun) : that;
+    };
+
+    var PC = function(m) {
+        var total = 0;
+        for (var n = 1; n <= m; n++) {
+            var p = P(m,n);
+            total += p;
+        };
+        return total;
+    };
+    // which is really a permutation of combination
+    var permutationCombination = function(ary, fun) {
+        // if (!nelem) nelem = ary.length;
+        // if (nelem < 1) throw new RangeError;
+        // if (nelem > ary.length) throw new RangeError;
+        var size = PC(ary.length),
+            sizeOf = function() {
+                return size;
+            },
+            that = Object.create(ary.slice(), {
+                length: {
+                    get: sizeOf
+                }
+            });
+        hideProperty(that, 'cmb');
+        hideProperty(that, 'per');
+        hideProperty(that, 'nelem');
+        addProperties(that, {
+            valueOf: function() {
+                return size;
+            },
+            init: function() {
+                this.nelem = 1;
+                // console.log("Starting nelem: " + this.nelem);
+                this.cmb = combination(ary, this.nelem);
+                this.per = _permutation(this.cmb.next());
+            },
+            next: function() {
+                var result = this.per.next();
+                if (!result) {
+                    var cmb = this.cmb.next();
+                    if (!cmb) {
+                        this.nelem++;
+                        // console.log("increment nelem: " + this.nelem + " vs " + ary.length);
+                        if (this.nelem > ary.length) return;
+                        this.cmb = combination(ary, this.nelem);
+                        cmb = this.cmb.next();
+                        if (!cmb) return;
+                    }
+                    this.per = _permutation(cmb);
+                    return this.next();
+                }
+                return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+            }
+        });
+        addProperties(that, common);
+        that.init();
+        return (typeof (fun) === 'function') ? that.map(fun) : that;
+    };
+    /* Cartesian Product */
+    var arraySlice = Array.prototype.slice;
+    var cartesianProduct = function() {
+        if (!arguments.length) throw new RangeError;
+        var args = arraySlice.call(arguments),
+            size = args.reduce(function(p, a) {
+                return p * a.length;
+            }, 1),
+            sizeOf = function() {
+                return size;
+            },
+            dim = args.length,
+            that = Object.create(args, {
+                length: {
+                    get: sizeOf
+                }
+            });
+        if (!size) throw new RangeError;
+        hideProperty(that, 'index');
+        addProperties(that, {
+            valueOf: sizeOf,
+            dim: dim,
+            init: function() {
+                this.index = 0;
+            },
+            get: function() {
+                if (arguments.length !== this.length) return;
+                var result = [],
+                    d = 0;
+                for (; d < dim; d++) {
+                    var i = arguments[d];
+                    if (i >= this[d].length) return;
+                    result.push(this[d][i]);
+                }
+                return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+            },
+            nth: function(n) {
+                var result = [],
+                    d = 0;
+                for (; d < dim; d++) {
+                    var l = this[d].length;
+                    var i = n % l;
+                    result.push(this[d][i]);
+                    n -= i;
+                    n /= l;
+                }
+                return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+            },
+            next: function() {
+                if (this.index >= size) return;
+                var result = this.nth(this.index);
+                this.index++;
+                return result;
+            }
+        });
+        addProperties(that, common);
+        that.init();
+        return that;
+    };
+    /* baseN */
+    var baseN = function(ary, nelem, fun) {
+                if (!nelem) nelem = ary.length;
+        if (nelem < 1) throw new RangeError;
+        var base = ary.length,
+                size = Math.pow(base, nelem);
+        var sizeOf = function() {
+                return size;
+            },
+            that = Object.create(ary.slice(), {
+                length: {
+                    get: sizeOf
+                }
+            });
+        hideProperty(that, 'index');
+        addProperties(that, {
+            valueOf: sizeOf,
+            init: function() {
+                that.index = 0;
+            },
+            nth: function(n) {
+                if (n >= size) return;
+                var result = [];
+                for (var i = 0; i < nelem; i++) {
+                    var d = n % base;
+                    result.push(ary[d])
+                    n -= d; n /= base
+                }
+                return (typeof (that._lazyMap) === 'function')?that._lazyMap(result):result;
+            },
+            next: function() {
+                return this.nth(this.index++);
+            }
+        });
+        addProperties(that, common);
+        that.init();
+        return (typeof (fun) === 'function') ? that.map(fun) : that;
+    };
+
+    /* export */
+    var Combinatorics = Object.create(null);
+    addProperties(Combinatorics, {
+        C: C,
+        P: P,
+        factorial: factorial,
+        factoradic: factoradic,
+        cartesianProduct: cartesianProduct,
+        combination: combination,
+        bigCombination: bigCombination,
+        permutation: permutation,
+        permutationCombination: permutationCombination,
+        power: power,
+        baseN: baseN,
+        VERSION: version
+    });
+    return Combinatorics;
+}));
+
+},{}],59:[function(require,module,exports){
 function moveToMapPosition(referenceMap, mapToMove) {
   mapToMove.jumpTo({
     center: referenceMap.getCenter(),
@@ -24318,7 +24846,7 @@ function syncMaps(a, b) {
 
 module.exports = syncMaps;
 
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 (function (global){
 (function (f) {
     if (typeof exports === 'object' && typeof module !== 'undefined') {
@@ -43917,7 +44445,7 @@ module.exports = syncMaps;
     }, {}, [65])(65);
 }));
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 //! moment.js
 //! version : 2.18.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -48382,12 +48910,13 @@ return hooks;
 
 })));
 
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 const mapboxgl = require('mapbox-gl'),
       syncMove = require('mapbox-gl-sync-move'),
       $ = require('jquery'),
       Chart = require('chart.js'),
-      layer = require('./layer.js');
+      layer = require('./layer.js'),
+      Combinatorics = require('js-combinatorics');;
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGNoZW5nMDEwNCIsImEiOiJjaXE0MDh2MHQwMG9xZnhtNGg0azVybGxtIn0.7jdNnbpd8kQI3qO1HfSnUg';
 
@@ -48422,19 +48951,24 @@ const map4 = new mapboxgl.Map({
     center: [-118.246911, 34.056604]
 });
 
-syncMove(map1, map2);
-syncMove(map1, map3);
-syncMove(map1, map4);
-syncMove(map2, map4);
-syncMove(map2, map3);
-syncMove(map3, map4);
+const maps = [map1,map2,map3,map4];
+//sync maps
+const cmb = Combinatorics.combination(maps,2);
+cmb.forEach(function(a){ 
+  syncMove(a[0],a[1]);
+});
+//add navigation control for each map
+maps.forEach((map)=>{map.addControl(new mapboxgl.NavigationControl());})
 
-map1.addControl(new mapboxgl.NavigationControl());
-map2.addControl(new mapboxgl.NavigationControl());
-map3.addControl(new mapboxgl.NavigationControl());
-map4.addControl(new mapboxgl.NavigationControl());
+const arrows = ['#arrow1','#arrow2','#arrow3','#arrow4'];
+
+arrows.forEach((arrow,index)=>{
+  $(arrow).on('click', function(){switchLegend(index+1)});
+})
+
 map1.on('load', function () {
-  const paintOption = {
+  if (!map1.getLayer('bg_solar')){
+      const paintOption = {
         "fill-color": {
            property: 'PERCENT15',
            stops: [
@@ -48448,9 +48982,8 @@ map1.on('load', function () {
             "fill-outline-color": "#e1cdb5",
             'fill-opacity': 1
         };
-  if (!map1.getLayer('bg_solar')){
-    map1.addLayer(layer.noFilter('bg_solar','fill','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',paintOption));
-    map1.addLayer(layer.withFilter('map1_hover','line','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',{"line-color": "black"},["==", "FIPS", ""]));
+      map1.addLayer(layer.noFilter('bg_solar','fill','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',paintOption));
+      map1.addLayer(layer.withFilter('map1_hover','line','mapbox://dcheng0104.d4bi5x4w','bg_percent15-7zu5df','visible',{"line-color": "black"},["==", "FIPS", ""]));
 
   }
 });
@@ -48471,7 +49004,8 @@ map1.on('style.load', function() {
               "fill-outline-color": "#e1cdb5",
               'fill-opacity': 1
           };
-      map1.addLayer(layer.noFilter('bg_demand','fill','mapbox://dcheng0104.10mik2bs','cirgroupgeojson','visible',paintOption2));      
+      map1.addLayer(layer.noFilter('bg_demand','fill','mapbox://dcheng0104.10mik2bs','cirgroupgeojson','visible',paintOption2));   
+      map1.addLayer(layer.withFilter('bg_demandHover','line','mapbox://dcheng0104.10mik2bs','cirgroupgeojson','visible',{"line-color": "black"},["==", "FID", ""]));   
     }
     else if(map1.getStyle().name === 'Mapbox Dark' & !map1.getLayer('bg_solar')){
       const paintOption = {
@@ -48563,25 +49097,36 @@ function createBarChart(data){
 
 }
 map1.on("click",function(e){
-  const queryLayers = ['bg_solar'];
+  let queryLayers,filter,filterLayer,propDic;
+  if (map1.getLayer('bg_solar')) {
+      queryLayers = ['bg_solar'];
+      filter = 'FIPS';
+      propDic = {'AREA_SUITA':'Suitable Solar Rooftop Area (sqft)','BLD_TOTAL':'Total Rooftop Area (sqft)'};
+      filterLayer = 'map1_hover';
+    }
+  else{
+      queryLayers = ['bg_demand'];
+      filter = 'FID';
+      propDic = {'peak_filte':'Potential Net Solar Exports (Peak, in MW)','mwh':'Total Demand (mwh)'};
+      filterLayer = 'bg_demandHover';
+  }
   let features = map1.queryRenderedFeatures(e.point, { layers: queryLayers});
   if (features.length){
-    map1.setFilter("map1_hover", ["==", "FIPS", features[0].properties.FIPS]);   
-    let propDic = {'AREA_SUITA':'Suitable Solar Rooftop Area','BLD_TOTAL':'Total Rooftop Area'};
+    map1.setFilter(filterLayer, ["==", filter, features[0].properties[filter]]);   
     let html = '<div>';
     Object.keys(propDic).forEach((elem)=>{
-        html = html + '<div style = "background-color:#e4dfdf">' + propDic[elem] + '  :</div>' +'<div>'+(+features[0].properties[elem.toUpperCase()].toFixed(0)).toLocaleString('en') + ' sqft</div></div><div>'
+        html = html + '<div style = "background-color:#e4dfdf">' + propDic[elem] + '  :</div>' +'<div>'+(+features[0].properties[elem].toFixed(2)).toLocaleString('en') + ' sqft</div></div><div>'
          },propDic,features)
          html=html.slice(0,html.length-5);
          let popup = new mapboxgl.Popup()
                         .setLngLat(map1.unproject(e.point))
                         .setHTML(html)
                         .addTo(map1);
-      } else {
-        console.log('re');
-        map1.setFilter("map1_hover", ["==", "FIPS", ""]);       
-      }         
+    } else {
+        map1.setFilter(filterLayer, ["==", filter, ""]);       
+    }  
   
+
 });
 
 map2.on("click", function(e) {
@@ -48714,8 +49259,6 @@ $('#solar').click(function() {
 
 function switchMap1(displayLayer){
   const hideLayer = (displayLayer === 'solar')?'demand' :'solar';  
-  // map4.setLayoutProperty(`bg_${hideLayer}`, 'visibility', 'none');
-  // map4.setLayoutProperty(`bg_${displayLayer}`, 'visibility', 'visible');
   $(`#${hideLayer}`)[0].checked= false;
   $(`#${hideLayer}Legend`).hide();
   $(`#${displayLayer}Legend`).show();
@@ -48745,18 +49288,13 @@ function switchLegend(number){
   }
 }
 
-const arrows = ['#arrow1','#arrow2','#arrow3','#arrow4'];
-
-arrows.forEach((arrow,index)=>{
-  $(arrow).on('click', function(){switchLegend(index+1)});
-})
 
 
 
 
 
 
-},{"./layer.js":62,"chart.js":1,"jquery":57,"mapbox-gl":59,"mapbox-gl-sync-move":58}],62:[function(require,module,exports){
+},{"./layer.js":63,"chart.js":1,"jquery":57,"js-combinatorics":58,"mapbox-gl":60,"mapbox-gl-sync-move":59}],63:[function(require,module,exports){
 module.exports = {
 	withFilter : function (mapId,mapType,url,sourceLayer,visibility,paintOption,filterOption){
 		const layer = {
@@ -48801,4 +49339,4 @@ module.exports = {
 
 
 
-},{}]},{},[61]);
+},{}]},{},[62]);
